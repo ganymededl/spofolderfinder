@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SharePoint Folder Finder</title>
+<style>
+  :root{
+    --bg:#faf9f8; --card:#ffffff; --ink:#242424; --sub:#605e5c;
+    --line:#edebe9; --brand:#0f6cbd; --brand-dk:#115ea3;
+    --accent:#eff6fc; --good:#0e700e; --goodbg:#f1faf1; --warn:#8a6d00; --warnbg:#fff4ce;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--ink);line-height:1.45;padding:28px 18px 60px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  header h1{font-size:22px;margin:0 0 4px;font-weight:600;}
+  header p{margin:0 0 20px;color:var(--sub);font-size:13.5px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:18px;}
+  label{font-size:12.5px;font-weight:600;color:var(--sub);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
+  textarea{width:100%;min-height:96px;resize:vertical;padding:11px 12px;border:1px solid #c8c6c4;border-radius:7px;font-size:13px;font-family:Consolas,'Courier New',monospace;color:var(--ink);background:#fff;}
+  textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 2px rgba(15,108,189,.18);}
+  .row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center;}
+  button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:6px;padding:9px 16px;border:1px solid transparent;transition:.12s;}
+  .primary{background:var(--brand);color:#fff;}
+  .primary:hover{background:var(--brand-dk);}
+  .ghost{background:#fff;color:var(--ink);border-color:#c8c6c4;}
+  .ghost:hover{background:#f3f2f1;}
+  .hint{font-size:12px;color:var(--sub);}
+  .err{background:var(--warnbg);color:var(--warn);border:1px solid #f2e2a8;padding:12px 14px;border-radius:7px;font-size:13px;margin-top:10px;}
+  #out{display:none;}
+  .meta{font-size:12.5px;color:var(--sub);margin:0 0 14px;}
+  .meta b{color:var(--ink);font-weight:600;}
+  .filename{font-size:14px;font-weight:600;background:var(--accent);border:1px solid #d6e8f8;padding:10px 12px;border-radius:7px;margin-bottom:18px;word-break:break-word;}
+  .sect-title{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--sub);margin:0 0 10px;}
+  ul.levels{list-style:none;margin:0;padding:0;}
+  ul.levels li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:#fff;word-break:break-word;}
+  ul.levels li.parent{border-color:#bfe3bf;background:var(--goodbg);}
+  .depth{color:#a19f9d;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .fname{flex:1;min-width:0;}
+  .fname a{color:var(--brand-dk);text-decoration:none;font-weight:600;font-size:13.5px;}
+  .fname a:hover{text-decoration:underline;}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--good);color:#fff;padding:2px 7px;border-radius:10px;margin-left:8px;vertical-align:middle;}
+  .tag.lib{background:#8a8886;}
+  .copy{background:#fff;border:1px solid #c8c6c4;color:var(--sub);padding:5px 10px;font-size:12px;border-radius:5px;white-space:nowrap;}
+  .copy:hover{background:#f3f2f1;color:var(--ink);}
+  .copy.done{background:var(--goodbg);border-color:#bfe3bf;color:var(--good);}
+  .bonus{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);}
+  .bonus a{color:var(--brand-dk);font-size:13px;word-break:break-all;}
+  .about{padding:14px 16px;}
+  .about code{background:#f3f2f1;padding:1px 5px;border-radius:4px;font-size:11.5px;}
+  footer{text-align:center;color:#a19f9d;font-size:11.5px;margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>SharePoint Folder Finder</h1>
+    <p>Paste any SharePoint / Stream video link &mdash; the messy Outlook one <b>or</b> the &ldquo;Copy link&rdquo; one &mdash; and get clean, clickable links to the folder that holds it (and every folder above it). Runs entirely in your browser; nothing is uploaded.</p>
+  </header>
+
+  <div class="card">
+    <label for="in">Paste the video link</label>
+    <textarea id="in" placeholder="https://microsoft.sharepoint.com/sites/.../Shared Documents/.../Meeting Recording.mp4?xsdata=...&#10;-- or --&#10;https://microsoft.sharepoint.com/:v:/r/sites/.../stream.aspx?id=%2Fsites%2F..."></textarea>
+    <div class="row">
+      <button class="primary" id="go">Get folder links</button>
+      <button class="ghost" id="clear">Clear</button>
+      <span class="hint">Tip: it also parses the moment you paste.</span>
+    </div>
+    <div id="error"></div>
+  </div>
+
+  <div class="card" id="out">
+    <p class="meta">Site: <b id="m-site"></b> &nbsp;&bull;&nbsp; Library: <b id="m-lib"></b></p>
+    <div class="filename" id="m-file"></div>
+
+    <p class="sect-title">Folders &mdash; top level down to the one holding this video</p>
+    <ul class="levels" id="levels"></ul>
+
+    <div class="bonus">
+      <p class="sect-title">Bonus &mdash; clean video link (tracking parameters removed)</p>
+      <p style="margin:0 0 6px;"><a id="clean-video" target="_blank" rel="noopener"></a></p>
+      <p class="hint" style="margin:0;">A tidy, copy-ready link with the <code>?xsdata=...</code> / <code>&amp;share=...</code> junk stripped out.</p>
+    </div>
+  </div>
+
+  <div class="card about">
+    <b style="color:var(--ink);">What it does</b><br>
+    Reads the folder path out of the link, strips the tracking parameters, and rebuilds proper SharePoint
+    <code>Forms/AllItems.aspx?id=...</code> folder-view URLs that actually open in the browser &mdash; so you never have to
+    URL-decode by hand or click down through nested folders again. The <b>green</b> row is the folder that houses the
+    video (where your sibling assets live); the grey <b>Library</b> tag marks the top-level document library.
+  </div>
+
+  <footer>Self-contained &middot; offline &middot; no data leaves this page</footer>
+</div>
+
+<script>
+const SITE_PREFIXES = new Set(['sites','teams','personal']);
+const VIDEO_EXT = new Set(['mp4','mov','webm','m4v','avi','wmv','mkv']);
+
+function cleanInput(raw){
+  let s = (raw||'').trim();
+  s = s.replace(/^[<"'\s]+/,'').replace(/[>"'\s]+$/,'');
+  return s;
+}
+
+function getServerRelativePath(input){
+  const u = new URL(input);
+  const id = u.searchParams.get('id');
+  if (id) return { path: id, host: u.origin };
+  return { path: decodeURIComponent(u.pathname), host: u.origin };
+}
+
+function analyze(input){
+  const parsed = getServerRelativePath(input);
+  const path = parsed.path, host = parsed.host;
+  if (!path || path.indexOf('/') !== 0) throw new Error('That does not look like a SharePoint file path.');
+  const segs = path.split('/');
+  if (segs.length < 3) throw new Error('Could not find a folder path in that link.');
+
+  let libIndex;
+  if (SITE_PREFIXES.has((segs[1]||'').toLowerCase())) libIndex = 3;
+  else libIndex = 1;
+
+  const siteRoot    = '/' + segs.slice(1, libIndex).join('/');
+  const library     = decodeURIComponent(segs[libIndex] || '(document library)');
+  const libraryRoot = segs.slice(0, libIndex+1).join('/');
+  const fileName    = decodeURIComponent(segs[segs.length-1] || '');
+
+  const levels = [];
+  for (let i = libIndex; i < segs.length-1; i++){
+    levels.push({ name: decodeURIComponent(segs[i]), path: segs.slice(0, i+1).join('/'), isLibrary: i===libIndex });
+  }
+  return { host: host, path: path, siteRoot: siteRoot, library: library, libraryRoot: libraryRoot, fileName: fileName, levels: levels };
+}
+
+function encodePagePath(p){
+  return p.split('/').map(function(s){ return s ? encodeURIComponent(s) : s; }).join('/');
+}
+function folderUrl(host, libraryRoot, folderPath){
+  return host + encodePagePath(libraryRoot) + '/Forms/AllItems.aspx?id=' + encodeURIComponent(folderPath);
+}
+function cleanVideoUrl(host, siteRoot, filePath){
+  const ext = (filePath.split('.').pop()||'').toLowerCase();
+  if (VIDEO_EXT.has(ext)){
+    const sr = (siteRoot === '/') ? '' : siteRoot;
+    return host + '/:v:/r' + encodePagePath(sr) + '/_layouts/15/stream.aspx?id=' + encodeURIComponent(filePath);
+  }
+  return host + encodePagePath(filePath);
+}
+
+function el(id){ return document.getElementById(id); }
+
+function render(a){
+  el('m-site').textContent = (a.siteRoot === '/') ? '(root site)' : a.siteRoot.split('/').pop();
+  el('m-lib').textContent  = a.library;
+  el('m-file').textContent = a.fileName;
+
+  const ul = el('levels'); ul.innerHTML = '';
+  a.levels.forEach(function(lv, i){
+    const isParent = (i === a.levels.length - 1);
+    const url = folderUrl(a.host, a.libraryRoot, lv.path);
+    const li = document.createElement('li');
+    if (isParent) li.className = 'parent';
+
+    const depth = document.createElement('span');
+    depth.className = 'depth';
+    depth.textContent = 'L' + (i+1);
+
+    const name = document.createElement('span');
+    name.className = 'fname';
+    const link = document.createElement('a');
+    link.href = url; link.target = '_blank'; link.rel = 'noopener';
+    link.textContent = lv.name;
+    name.appendChild(link);
+    if (isParent){ const t=document.createElement('span'); t.className='tag'; t.textContent='holds this video'; name.appendChild(t); }
+    else if (lv.isLibrary){ const t=document.createElement('span'); t.className='tag lib'; t.textContent='Library'; name.appendChild(t); }
+
+    const copy = document.createElement('button');
+    copy.className = 'copy'; copy.textContent = 'Copy';
+    copy.onclick = function(){
+      navigator.clipboard.writeText(url).then(function(){
+        copy.textContent = 'Copied \u2713'; copy.classList.add('done');
+        setTimeout(function(){ copy.textContent='Copy'; copy.classList.remove('done'); }, 1500);
+      }).catch(function(){ window.prompt('Copy this link:', url); });
+    };
+
+    li.appendChild(depth); li.appendChild(name); li.appendChild(copy);
+    ul.appendChild(li);
+  });
+
+  const cv = el('clean-video');
+  const cvurl = cleanVideoUrl(a.host, a.siteRoot, a.path);
+  cv.href = cvurl; cv.textContent = cvurl;
+
+  el('out').style.display = 'block';
+}
+
+function run(){
+  const errBox = el('error'); errBox.innerHTML=''; el('out').style.display='none';
+  const val = cleanInput(el('in').value);
+  if (!val) return;
+  try{
+    render(analyze(val));
+  }catch(e){
+    errBox.innerHTML = '<div class="err"><b>Couldn\u2019t read that link.</b> '
+      + (e && e.message ? e.message : '')
+      + ' Make sure you pasted a full SharePoint or Stream URL (it should start with https://\u2026sharepoint.com/\u2026).</div>';
+  }
+}
+
+el('go').addEventListener('click', run);
+el('in').addEventListener('paste', function(){ setTimeout(run, 30); });
+el('in').addEventListener('keydown', function(e){ if (e.key==='Enter' && (e.ctrlKey||e.metaKey)) run(); });
+el('clear').addEventListener('click', function(){ el('in').value=''; el('error').innerHTML=''; el('out').style.display='none'; el('in').focus(); });
+</script>
+</body>
+</html>
