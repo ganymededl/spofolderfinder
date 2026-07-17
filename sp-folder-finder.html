@@ -8,62 +8,111 @@
   :root{
     --bg:#faf9f8; --card:#ffffff; --ink:#242424; --sub:#605e5c;
     --line:#edebe9; --brand:#0f6cbd; --brand-dk:#115ea3;
-    --accent:#eff6fc; --good:#0e700e; --goodbg:#f1faf1; --warn:#8a6d00; --warnbg:#fff4ce;
+    --accent:#eff6fc; --accent-line:#d6e8f8;
+    --good:#0e700e; --goodbg:#f1faf1; --good-line:#bfe3bf;
+    --warn:#8a6d00; --warnbg:#fff4ce; --warn-line:#f2e2a8;
+    --field-bg:#ffffff; --field-border:#c8c6c4; --hover:#f3f2f1;
+    --chip:#f3f2f1; --libtag:#8a8886; --muted:#a19f9d;
+  }
+  html[data-theme="dark"]{
+    --bg:#1b1a19; --card:#252423; --ink:#f3f2f1; --sub:#c8c6c4;
+    --line:#3b3a39; --brand:#4aa5f0; --brand-dk:#79bdf7;
+    --accent:#13293c; --accent-line:#204b6b;
+    --good:#7ecb7e; --goodbg:#16301a; --good-line:#2f5a30;
+    --warn:#ffd466; --warnbg:#352c12; --warn-line:#5a4a17;
+    --field-bg:#1b1a19; --field-border:#484644; --hover:#323130;
+    --chip:#333230; --libtag:#7a7876; --muted:#8a8886;
   }
   *{box-sizing:border-box}
-  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--ink);line-height:1.45;padding:28px 18px 60px;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--ink);line-height:1.45;padding:22px 18px 48px;transition:background .2s,color .2s;}
   .wrap{max-width:900px;margin:0 auto;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .brand{display:flex;align-items:center;gap:9px;}
+  .brand svg{display:block;}
+  .ms-word{font-size:17px;font-weight:600;color:var(--ink);letter-spacing:.1px;}
+  .theme-toggle{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;border-radius:20px;padding:7px 13px;border:1px solid var(--field-border);background:var(--card);color:var(--ink);transition:.12s;}
+  .theme-toggle:hover{background:var(--hover);}
+  .theme-toggle .ic{font-size:14px;line-height:1;}
+
   header h1{font-size:22px;margin:0 0 4px;font-weight:600;}
-  header p{margin:0 0 20px;color:var(--sub);font-size:13.5px;}
+  .byline{margin:0 0 14px;color:var(--sub);font-size:12.5px;font-weight:600;}
+  .byline .dot{color:var(--muted);margin:0 7px;}
+  .explain{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;padding:14px 16px;margin:0 0 20px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .explain p{margin:0 0 9px;font-size:13.5px;color:var(--ink);}
+  .explain p:last-child{margin-bottom:0;}
+  .explain code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:11.5px;}
+  .explain b.g{color:var(--good);}
+
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 18px 20px;box-shadow:0 1px 2px rgba(0,0,0,.04);margin-bottom:18px;}
   label{font-size:12.5px;font-weight:600;color:var(--sub);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
-  textarea{width:100%;min-height:96px;resize:vertical;padding:11px 12px;border:1px solid #c8c6c4;border-radius:7px;font-size:13px;font-family:Consolas,'Courier New',monospace;color:var(--ink);background:#fff;}
-  textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 2px rgba(15,108,189,.18);}
+  textarea{width:100%;min-height:96px;resize:vertical;padding:11px 12px;border:1px solid var(--field-border);border-radius:7px;font-size:13px;font-family:Consolas,'Courier New',monospace;color:var(--ink);background:var(--field-bg);}
+  textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 2px rgba(74,165,240,.25);}
   .row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center;}
   button{font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:6px;padding:9px 16px;border:1px solid transparent;transition:.12s;}
   .primary{background:var(--brand);color:#fff;}
   .primary:hover{background:var(--brand-dk);}
-  .ghost{background:#fff;color:var(--ink);border-color:#c8c6c4;}
-  .ghost:hover{background:#f3f2f1;}
+  .ghost{background:var(--card);color:var(--ink);border-color:var(--field-border);}
+  .ghost:hover{background:var(--hover);}
   .hint{font-size:12px;color:var(--sub);}
-  .err{background:var(--warnbg);color:var(--warn);border:1px solid #f2e2a8;padding:12px 14px;border-radius:7px;font-size:13px;margin-top:10px;}
+  .err{background:var(--warnbg);color:var(--warn);border:1px solid var(--warn-line);padding:12px 14px;border-radius:7px;font-size:13px;margin-top:10px;}
   #out{display:none;}
   .meta{font-size:12.5px;color:var(--sub);margin:0 0 14px;}
   .meta b{color:var(--ink);font-weight:600;}
-  .filename{font-size:14px;font-weight:600;background:var(--accent);border:1px solid #d6e8f8;padding:10px 12px;border-radius:7px;margin-bottom:18px;word-break:break-word;}
+  .filename{font-size:14px;font-weight:600;background:var(--accent);border:1px solid var(--accent-line);padding:10px 12px;border-radius:7px;margin-bottom:18px;word-break:break-word;color:var(--ink);}
   .sect-title{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--sub);margin:0 0 10px;}
   ul.levels{list-style:none;margin:0;padding:0;}
-  ul.levels li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:#fff;word-break:break-word;}
-  ul.levels li.parent{border-color:#bfe3bf;background:var(--goodbg);}
-  .depth{color:#a19f9d;font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  ul.levels li{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--card);word-break:break-word;}
+  ul.levels li.parent{border-color:var(--good-line);background:var(--goodbg);}
+  .depth{color:var(--muted);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;}
   .fname{flex:1;min-width:0;}
   .fname a{color:var(--brand-dk);text-decoration:none;font-weight:600;font-size:13.5px;}
   .fname a:hover{text-decoration:underline;}
   .tag{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--good);color:#fff;padding:2px 7px;border-radius:10px;margin-left:8px;vertical-align:middle;}
-  .tag.lib{background:#8a8886;}
-  .copy{background:#fff;border:1px solid #c8c6c4;color:var(--sub);padding:5px 10px;font-size:12px;border-radius:5px;white-space:nowrap;}
-  .copy:hover{background:#f3f2f1;color:var(--ink);}
-  .copy.done{background:var(--goodbg);border-color:#bfe3bf;color:var(--good);}
+  .tag.lib{background:var(--libtag);}
+  .copy{background:var(--card);border:1px solid var(--field-border);color:var(--sub);padding:5px 10px;font-size:12px;border-radius:5px;white-space:nowrap;}
+  .copy:hover{background:var(--hover);color:var(--ink);}
+  .copy.done{background:var(--goodbg);border-color:var(--good-line);color:var(--good);}
   .bonus{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);}
   .bonus a{color:var(--brand-dk);font-size:13px;word-break:break-all;}
-  .about{padding:14px 16px;}
-  .about code{background:#f3f2f1;padding:1px 5px;border-radius:4px;font-size:11.5px;}
-  footer{text-align:center;color:#a19f9d;font-size:11.5px;margin-top:24px;}
+  .bonus code{background:var(--chip);padding:1px 5px;border-radius:4px;font-size:11.5px;}
+  footer{text-align:center;color:var(--muted);font-size:11.5px;margin-top:24px;}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <svg width="21" height="21" viewBox="0 0 23 23" aria-label="Microsoft">
+        <rect x="1"  y="1"  width="10" height="10" fill="#f25022"/>
+        <rect x="12" y="1"  width="10" height="10" fill="#7fba00"/>
+        <rect x="1"  y="12" width="10" height="10" fill="#00a4ef"/>
+        <rect x="12" y="12" width="10" height="10" fill="#ffb900"/>
+      </svg>
+      <span class="ms-word">Microsoft</span>
+    </div>
+    <button class="theme-toggle" id="themeBtn" type="button" title="Toggle dark / light mode" aria-label="Toggle dark or light mode">
+      <span class="ic" id="themeIc">&#9790;</span><span id="themeLbl">Dark</span>
+    </button>
+  </div>
+
   <header>
     <h1>SharePoint Folder Finder</h1>
-    <p>Paste any SharePoint / Stream video link &mdash; the messy Outlook one <b>or</b> the &ldquo;Copy link&rdquo; one &mdash; and get clean, clickable links to the folder that holds it (and every folder above it). Runs entirely in your browser; nothing is uploaded.</p>
+    <p class="byline">Built by David S. Liu for SLED <span class="dot">&bull;</span> July 17, 2026</p>
+    <div class="explain">
+      <p>Reads the folder path out of the link, strips the tracking parameters, and rebuilds proper SharePoint <code>Forms/AllItems.aspx?id=...</code> folder-view URLs that actually open in the browser &mdash; so you never have to URL-decode by hand or click down through nested folders again.</p>
+      <p>The <b class="g">green</b> row is the folder that houses the video (where your sibling assets live); the grey <b>Library</b> tag marks the top-level document library.</p>
+      <p>Paste any SharePoint / Stream video link &mdash; the messy Outlook one or the &ldquo;Copy link&rdquo; one &mdash; and get clean, clickable links to the folder that holds it (and every folder above it).</p>
+      <p>Runs entirely in your browser; nothing is uploaded.</p>
+    </div>
   </header>
 
   <div class="card">
     <label for="in">Paste the video link</label>
     <textarea id="in" placeholder="https://microsoft.sharepoint.com/sites/.../Shared Documents/.../Meeting Recording.mp4?xsdata=...&#10;-- or --&#10;https://microsoft.sharepoint.com/:v:/r/sites/.../stream.aspx?id=%2Fsites%2F..."></textarea>
     <div class="row">
-      <button class="primary" id="go">Get folder links</button>
-      <button class="ghost" id="clear">Clear</button>
+      <button class="primary" id="go" type="button">Get folder links</button>
+      <button class="ghost" id="clear" type="button">Clear</button>
       <span class="hint">Tip: it also parses the moment you paste.</span>
     </div>
     <div id="error"></div>
@@ -83,18 +132,38 @@
     </div>
   </div>
 
-  <div class="card about">
-    <b style="color:var(--ink);">What it does</b><br>
-    Reads the folder path out of the link, strips the tracking parameters, and rebuilds proper SharePoint
-    <code>Forms/AllItems.aspx?id=...</code> folder-view URLs that actually open in the browser &mdash; so you never have to
-    URL-decode by hand or click down through nested folders again. The <b>green</b> row is the folder that houses the
-    video (where your sibling assets live); the grey <b>Library</b> tag marks the top-level document library.
-  </div>
-
-  <footer>Self-contained &middot; offline &middot; no data leaves this page</footer>
+  <footer>Microsoft <span style="opacity:.6;">&middot;</span> SLED <span style="opacity:.6;">&middot;</span> Self-contained &amp; offline &mdash; no data leaves this page.</footer>
 </div>
 
 <script>
+/* ---- theme toggle ---- */
+(function(){
+  var KEY='spff-theme';
+  function apply(t){
+    document.documentElement.setAttribute('data-theme', t);
+    var dark = (t==='dark');
+    var ic=document.getElementById('themeIc'), lbl=document.getElementById('themeLbl');
+    if(ic) ic.innerHTML = dark ? '\u2600' : '\u263E';   /* sun when dark (click->light), moon when light */
+    if(lbl) lbl.textContent = dark ? 'Light' : 'Dark';
+  }
+  var saved;
+  try{ saved = localStorage.getItem(KEY); }catch(e){}
+  if(!saved){
+    saved = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  apply(saved);
+  document.addEventListener('DOMContentLoaded', function(){
+    apply(document.documentElement.getAttribute('data-theme')||'light');
+    var btn=document.getElementById('themeBtn');
+    if(btn) btn.addEventListener('click', function(){
+      var next = (document.documentElement.getAttribute('data-theme')==='dark') ? 'light' : 'dark';
+      apply(next);
+      try{ localStorage.setItem(KEY, next); }catch(e){}
+    });
+  });
+})();
+
+/* ---- folder finder ---- */
 const SITE_PREFIXES = new Set(['sites','teams','personal']);
 const VIDEO_EXT = new Set(['mp4','mov','webm','m4v','avi','wmv','mkv']);
 
@@ -177,7 +246,7 @@ function render(a){
     else if (lv.isLibrary){ const t=document.createElement('span'); t.className='tag lib'; t.textContent='Library'; name.appendChild(t); }
 
     const copy = document.createElement('button');
-    copy.className = 'copy'; copy.textContent = 'Copy';
+    copy.className = 'copy'; copy.type='button'; copy.textContent = 'Copy';
     copy.onclick = function(){
       navigator.clipboard.writeText(url).then(function(){
         copy.textContent = 'Copied \u2713'; copy.classList.add('done');
